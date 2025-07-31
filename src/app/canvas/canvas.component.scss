@@ -1,0 +1,241 @@
+.toolbar {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  .btn-toolbar .btn {
+    margin-right: 5px;
+  }
+}
+
+.shape-options {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.shape-preview {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  transition: all 0.2s;
+
+  &.circle {
+    border-radius: 50%;
+    background-color: #007bff;
+  }
+
+  &.square {
+    background-color: #28a745;
+  }
+
+  &:hover, &.selected {
+    border-color: #ffc107;
+    transform: scale(1.1);
+  }
+}
+
+.canvas-container {
+  position: relative;
+  width: 100%;
+  height: 70vh;
+  min-height: 500px;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  overflow: auto;
+  cursor: crosshair;
+  
+  .canvas {
+    position: relative;
+    min-width: 100%;
+    min-height: 100%;
+    width: max-content;
+    
+    app-shape {
+      position: absolute;
+      cursor: move;
+      
+      &.is-dragging {
+        cursor: grabbing;
+        z-index: 1000;
+      }
+    }
+  }
+  
+  background-image: 
+    linear-gradient(#f0f0f0 1px, transparent 1px),
+    linear-gradient(90deg, #f0f0f0 1px, transparent 1px);
+  background-size: 20px 20px;
+  
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border-radius: 0.375rem;
+  
+  .empty-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #6c757d;
+    
+    i {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+      opacity: 0.7;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+  }
+}
+
+.card {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  
+  .card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.25rem;
+    background-color: #f8f9fa;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+    background-color: #fff;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.375rem;
+  
+  i {
+    font-size: 1rem;
+  }
+  
+  &.btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  &.active {
+    background-color: #0d6efd;
+    color: white;
+    border-color: #0d6efd;
+    
+    &:hover {
+      background-color: #0b5ed7;
+      border-color: #0a58ca;
+    }
+  }
+  
+  &.btn-outline-secondary {
+    &:hover {
+      background-color: #f8f9fa;
+      border-color: #6c757d;
+    }
+    
+    &.active {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+      color: white;
+    }
+  }
+}
+
+.btn-group {
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  
+  .btn {
+    border-radius: 0;
+    margin: 0;
+    
+    &:first-child {
+      border-top-left-radius: 0.375rem;
+      border-bottom-left-radius: 0.375rem;
+    }
+    
+    &:last-child {
+      border-top-right-radius: 0.375rem;
+      border-bottom-right-radius: 0.375rem;
+    }
+    
+    &:not(:last-child) {
+      border-right: none;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .canvas-container {
+    height: 60vh;
+  }
+  
+  .btn-group {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    
+    .btn {
+      flex: 1;
+      min-width: 100px;
+      border-radius: 0.375rem !important;
+      margin: 0.25rem 0;
+      
+      &:not(:last-child) {
+        border-right: 1px solid #dee2e6 !important;
+      }
+    }
+  }
+  
+  .card {
+    .card-body {
+      padding: 1rem;
+    }
+  }
+}
+
+.shape-preview {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid #dee2e6;
+  border-radius: 4px;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  
+  &:hover {
+    border-color: #6c757d;
+  }
+  
+  &.circle {
+    border-radius: 50%;
+  }
+  
+  &.active {
+    border-color: #0d6efd;
+    background-color: #e7f1ff;
+  }
+}

@@ -1,0 +1,87 @@
+<div 
+  class="shape-container"
+  [style.left.px]="shape.x"
+  [style.top.px]="shape.y">
+  
+  <!-- Debug info for shape -->
+  <div style="position: absolute; top: 0; left: 0; background: rgba(0,0,0,0.7); color: white; padding: 4px; font-size: 10px; z-index: 1000;" *ngIf="shape">
+    ID: {{shape.id}} | {{shape.type}} | ({{shape.x}}, {{shape.y}})
+  </div>
+
+  <!-- Shape element -->
+  <div 
+    #shapeElement
+    class="shape"
+    [class.circle]="shape.type === 'circle'"
+    [class.square]="shape.type === 'square'"
+    [class.selected]="isSelected"
+    [class.is-dragging]="isDragging"
+    [style.width.px]="shape.width"
+    [style.height.px]="shape.height"
+    [style.background]="shapeColor"
+    [style.border]="'2px dashed ' + (shapeColor === '#FFFFFF' ? 'red' : shapeColor)"
+    (mousedown)="onMouseDown($event)">
+  </div>
+
+  <!-- Color Picker -->
+  <div class="color-picker-wrapper" >
+    <button class="color-picker-toggle" (click)="toggleColorPicker($event)" [style.background]="shapeColor" title="Pick color">
+      🎨
+    </button>
+    <div class="color-picker-palette" *ngIf="colorPickerOpen">
+      <div class="color-swatch" *ngFor="let color of colorOptions"
+           [style.background]="color"
+           [class.selected]="color === shapeColor"
+           (click)="setShapeColor(color)"
+           [title]="color">
+      </div>
+    </div>
+  </div>
+  
+  <!-- Text container -->
+  <div 
+    #shapeTextContainer
+    class="shape-text-container" 
+    *ngIf="!isEditing && shape.text"
+    (dblclick)="$event.stopPropagation(); startEditing($event)">
+    <div class="shape-text">
+      <div class="text-content">
+        {{ shape.text }}
+      </div>
+      <i 
+        *ngIf="isTextTruncated"
+        class="bi bi-info-circle info-icon"
+        (mousedown)="$event.stopPropagation()"
+        (click)="$event.stopPropagation(); showFullText($event)"
+        title="Show full text">
+      </i>
+    </div>
+  </div>
+  
+  <!-- Tooltip -->
+  <div class="tooltip" *ngIf="showTooltip" (click)="$event.stopPropagation()">
+    {{ shape.text }}
+  </div>
+  
+ 
+
+  <!-- Editing container -->
+  <div class="editing-container" *ngIf="isEditing" [style.width.px]="inputWidth">
+    <input 
+      #textInput
+      type="text" 
+      class="shape-input" 
+      [(ngModel)]="editingText"
+      (blur)="saveText()"
+      (keydown.enter)="saveText()"
+      (keydown.escape)="cancelEditing()"
+      (click)="$event.stopPropagation()"
+      (mousedown)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+      placeholder="Enter text..."
+      [style.width.px]="inputWidth"
+      style="box-sizing: border-box;"
+      autofocus>
+  </div>
+ 
+</div>

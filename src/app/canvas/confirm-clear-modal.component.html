@@ -1,0 +1,20 @@
+<div class="modal-backdrop" *ngIf="visible">
+  <div class="modal-dialog-centered modal-confirm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-icon text-danger">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </span>
+        <h5 class="modal-title ms-2">Clear Canvas</h5>
+      </div>
+      <div class="modal-body">
+        <p class="fw-bold text-danger mb-2">Warning!</p>
+        <p>Are you sure you want to clear the canvas? <br><span class="fw-bold">This cannot be undone.</span></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary px-4" (click)="onCancel()">Cancel</button>
+        <button class="btn btn-danger px-4" (click)="onConfirm()">Clear</button>
+      </div>
+    </div>
+  </div>
+</div>
