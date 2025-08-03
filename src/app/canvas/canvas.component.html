@@ -48,19 +48,41 @@
         </button>
       </div>
       
-      <div class="canvas-container">
-        <div 
-          class="canvas" 
-          #canvas
-          (click)="onCanvasClick($event)"
-          (contextmenu)="onContextMenu($event)">
-          
-          <app-shape 
-            *ngFor="let shape of shapes" 
-            [shape]="shape"
-            [isSelected]="selectedShapeId === shape.id"
-            (delete)="deleteSelectedShape()">
-          </app-shape>
+      <div class="canvas-flex-row">
+        <!-- Left: Shape Palette -->
+        <div class="shape-palette" tabindex="0">
+          <div class="palette-title">Shapes</div>
+          <div class="palette-list">
+            <div 
+              class="palette-item"
+              *ngFor="let item of shapePalette"
+              [attr.data-type]="item.type"
+              draggable="true"
+              (dragstart)="onShapePaletteDragStart($event, item)"
+            >
+              <i [class]="'bi ' + item.icon" [style.color]="item.color" style="font-size: 2rem;"></i>
+              <span class="palette-label">{{item.label}}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Canvas -->
+        <div class="canvas-container">
+          <div 
+            class="canvas" 
+            #canvas
+            (click)="onCanvasClick($event)"
+            (contextmenu)="onContextMenu($event)"
+            (dragover)="onCanvasDragOver($event)"
+            (drop)="onCanvasDrop($event)"
+          >
+            <app-shape 
+              *ngFor="let shape of shapes" 
+              [shape]="shape"
+              [isSelected]="selectedShapeId === shape.id"
+              (delete)="deleteSelectedShape()">
+            </app-shape>
+          </div>
         </div>
       </div>
       

@@ -34,17 +34,37 @@ export class CanvasService {
     }
   }
 
-  addShape(type: 'circle' | 'square', x: number, y: number) {
-    const newShape: Shape = {
-      id: this.generateId(),
-      type,
-      x,
-      y,
-      text: `${type} ${this.shapes.length + 1}`,
-      width: 100,
-      height: 100,
-      color: '#FFEB3B' // Default yellow color
-    };
+  addShape(type: 'circle' | 'square', x: number, y: number): Shape;
+  addShape(item: { type: 'circle' | 'square', label: string, color: string, width: number, height: number }, x: number, y: number): Shape;
+  addShape(arg1: any, x: number, y: number): Shape {
+    let newShape: Shape;
+    if (typeof arg1 === 'string') {
+      // Default label and color
+      const type = arg1 as 'circle' | 'square';
+      newShape = {
+        id: this.generateId(),
+        type,
+        x,
+        y,
+        text: `${type} ${this.shapes.filter(s => s.type === type).length + 1}`,
+        width: 100,
+        height: 100,
+        color: '#FFEB3B' // Default yellow
+      };
+    } else {
+      // Use palette item
+      const item = arg1;
+      newShape = {
+        id: this.generateId(),
+        type: item.type,
+        x,
+        y,
+        text: item.label,
+        width: item.width,
+        height: item.height,
+        color: item.color
+      };
+    }
     this.shapes.push(newShape);
     this.saveState();
     return newShape;

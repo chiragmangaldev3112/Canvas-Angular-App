@@ -2,6 +2,7 @@ import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular
 import { CommonModule } from '@angular/common';
 import { CanvasService } from '../services/canvas.service';
 import { Shape, CanvasState } from '../models/shape.model';
+import { SHAPE_PALETTE, ShapePaletteItem } from '../models/shape-palette';
 import { ShapeComponent } from '../components/shape/shape.component';
 import { ConfirmClearModalComponent } from './confirm-clear-modal.component';
 
@@ -16,6 +17,7 @@ type ShapeType = 'circle' | 'square';
   styleUrls: ['./canvas.component.scss']
 })
 export class CanvasComponent implements OnInit {
+  shapePalette: ShapePaletteItem[] = SHAPE_PALETTE;
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLDivElement>;
   selectedShapeType: ShapeType | null = null;
   shapes: Shape[] = [];
@@ -81,27 +83,56 @@ export class CanvasComponent implements OnInit {
     const x = event.clientX - rect.left - 50; // Center the shape on cursor
     const y = event.clientY - rect.top - 50;
 
-    // Add a new shape with default text and size
+    // Add a new shape with default label and color
     this.canvasService.addShape(this.selectedShapeType, x, y);
   }
   
   onContextMenu(event: MouseEvent) {
     event.preventDefault();
-    
     // Right-click on canvas clears selection
     if (!(event.target as HTMLElement).closest('.shape')) {
       this.canvasService.selectShape(null);
     }
   }
-  
+
+  // Drag-and-drop handlers for palette to canvas
+  onShapePaletteDragStart(event: DragEvent, item: ShapePaletteItem) {
+    event.dataTransfer?.setData('application/json', JSON.stringify(item));
+    event.dataTransfer!.effectAllowed = 'copy';
+  }
+
+  onCanvasDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.dataTransfer!.dropEffect = 'copy';
+  }
+
+  onCanvasDrop(event: DragEvent) {
+    event.preventDefault();
+    const data = event.dataTransfer?.getData('application/json');
+    if (!data) return;
+    let item: ShapePaletteItem;
+    try {
+      item = JSON.parse(data);
+    } catch {
+      return;
+    }
+    // Get drop position relative to canvas
+    const canvas = this.canvasRef.nativeElement;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left - item.width / 2;
+    const y = event.clientY - rect.top - item.height / 2;
+    // Add shape to canvas with all palette properties
+    this.canvasService.addShape(item, x, y);
+  }
+
   // setSelectedShape is already defined above
-  
+
   deleteSelectedShape() {
     if (this.selectedShapeId) {
       this.canvasService.deleteShape(this.selectedShapeId);
     }
   }
-  
+
   saveCanvas() {
     // Print the current shapes as JSON for backend/server use
     const shapesJson = JSON.stringify(this.shapes, null, 2);
@@ -136,7 +167,7 @@ export class CanvasComponent implements OnInit {
       alert('Invalid JSON: ' + e);
     }
   }
-  
+
   openClearCanvasModal() {
     this.showClearModal = true;
   }
