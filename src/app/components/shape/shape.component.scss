@@ -508,3 +508,11 @@
     }
   }
 }
+
+.shape-root {
+  position: relative;
+  transition: z-index 0.1s;
+}
+.shape-root.is-dragging {
+  z-index: 1000 !important;
+}

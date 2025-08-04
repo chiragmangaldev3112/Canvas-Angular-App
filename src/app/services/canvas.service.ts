@@ -29,6 +29,12 @@ export class CanvasService {
     const savedState = localStorage.getItem('canvasState');
     if (savedState) {
       const state: CanvasState = JSON.parse(savedState);
+      // Ensure all shapes have zIndex
+      let maxZ = 0;
+      state.shapes.forEach((s, idx) => {
+        if (typeof s.zIndex !== 'number') s.zIndex = idx + 1;
+        if (s.zIndex > maxZ) maxZ = s.zIndex;
+      });
       this.shapes = state.shapes;
       this.stateSubject.next(state);
     }
@@ -65,6 +71,9 @@ export class CanvasService {
         color: item.color
       };
     }
+    // Assign zIndex to be highest + 1
+    const maxZ = this.shapes.reduce((max, s) => Math.max(max, s.zIndex ?? 0), 0);
+    newShape.zIndex = maxZ + 1;
     this.shapes.push(newShape);
     this.saveState();
     return newShape;
@@ -136,6 +145,15 @@ export class CanvasService {
     }
   }
 
+  // Update shape with partial data (including text/edit positions)
+  updateShape(id: string, partial: Partial<Shape>) {
+    const shape = this.shapes.find(s => s.id === id);
+    if (shape) {
+      Object.assign(shape, partial);
+      this.saveState();
+    }
+  }
+
   deleteShape(id: string) {
     this.shapes = this.shapes.filter(shape => shape.id !== id);
     if (this.selectedShapeId === id) {
@@ -156,6 +174,17 @@ export class CanvasService {
 
   replaceAllShapes(shapes: Shape[]): void {
     this.shapes = [...shapes];
+    this.saveState();
+    this.stateSubject.next({ shapes: this.shapes });
+  }
+
+  // Bring shape to front by setting highest zIndex
+  bringShapeToFront(id: string) {
+    const shape = this.shapes.find(s => s.id === id);
+    if (!shape) return;
+    // Find current max zIndex
+    const maxZ = this.shapes.reduce((max, s) => Math.max(max, s.zIndex ?? 0), 0);
+    shape.zIndex = maxZ + 1;
     this.saveState();
     this.stateSubject.next({ shapes: this.shapes });
   }

@@ -455,13 +455,14 @@ export class ShapeComponent implements OnChanges, AfterViewInit, OnDestroy {
 
     this.isDragging = true;
     this.canvasService.selectShape(this.shape.id);
+    this.canvasService.bringShapeToFront(this.shape.id); // bring to front
 
     // Get the canvas container to handle scroll position
     const container = this.elementRef.nativeElement.closest('.canvas-container');
     const containerRect = container.getBoundingClientRect();
 
     // Calculate initial offset relative to the shape's top-left corner
-    const rect = this.elementRef.nativeElement.getBoundingClientRect();
+    const rect = this.shapeElement.nativeElement.getBoundingClientRect();
     // Calculate dragOffset relative to the shape's position in the canvas
     this.dragOffset = {
       x: event.clientX - (containerRect.left + this.shape.x),
@@ -471,8 +472,7 @@ export class ShapeComponent implements OnChanges, AfterViewInit, OnDestroy {
     console.log('[onMouseDown] shape.x/y:', {x: this.shape.x, y: this.shape.y});
     console.log('[onMouseDown] containerRect.left/top:', {left: containerRect.left, top: containerRect.top});
 
-    // Add dragging class
-    this.renderer.addClass(this.elementRef.nativeElement, 'is-dragging');
+    this.setShapeDraggingClass(true);
 
     // Store initial position for potential revert
     this.originalPosition = { x: this.shape.x, y: this.shape.y };
@@ -514,8 +514,7 @@ export class ShapeComponent implements OnChanges, AfterViewInit, OnDestroy {
     console.log('[onMouseUp] Mouse:', {x: event.clientX, y: event.clientY});
     if (this.isDragging) {
       this.isDragging = false;
-      const shapeElement = this.shapeElement.nativeElement;
-      shapeElement.classList.remove('is-dragging');
+      this.setShapeDraggingClass(false);
       // Always stop propagation to prevent accidental canvas click
       event.stopPropagation();
       event.preventDefault();
@@ -538,4 +537,78 @@ export class ShapeComponent implements OnChanges, AfterViewInit, OnDestroy {
       this.isDragging = false;
     }, 100);
   }
+
+  // Optionally, bring to front on click as well
+  onShapeClick(event: MouseEvent) {
+    this.canvasService.bringShapeToFront(this.shape.id);
+  }
+
+  // Utility to toggle is-dragging class on shape-root
+  private setShapeDraggingClass(isDragging: boolean) {
+    const root = this.shapeElement?.nativeElement;
+    if (root) {
+      if (isDragging) {
+        this.renderer.addClass(root, 'is-dragging');
+      } else {
+        this.renderer.removeClass(root, 'is-dragging');
+      }
+    }
+  }
+
+  // --- DRAG LOGIC FOR TEXT/EDIT CONTAINERS ---
+  private isTextDragging = false;
+  private textDragOffset = { x: 0, y: 0 };
+
+  onTextContainerMouseDown(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.isEditing) return; // Don't drag text container while editing
+    this.isTextDragging = true;
+    this.canvasService.bringShapeToFront(this.shape.id); // bring to front
+    this.setShapeDraggingClass(true);
+    const container = this.shapeTextContainer?.nativeElement;
+    const rect = container.getBoundingClientRect();
+    this.textDragOffset = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+    document.addEventListener('mousemove', this.onTextContainerMouseMove);
+    document.addEventListener('mouseup', this.onTextContainerMouseUp);
+  }
+
+  onEditContainerMouseDown(event: MouseEvent) {
+    event.stopPropagation();
+    if (!this.isEditing) return;
+    this.isTextDragging = true;
+    this.canvasService.bringShapeToFront(this.shape.id); // bring to front
+    this.setShapeDraggingClass(true);
+    const container = (event.target as HTMLElement).closest('.editing-container') as HTMLElement;
+    const rect = container.getBoundingClientRect();
+    this.textDragOffset = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+    document.addEventListener('mousemove', this.onTextContainerMouseMove);
+    document.addEventListener('mouseup', this.onTextContainerMouseUp);
+  }
+
+  onTextContainerMouseMove = (event: MouseEvent) => {
+    if (!this.isTextDragging) return;
+    // Use the correct parent for bounding rect
+    const parentRect = this.shapeElement.nativeElement.getBoundingClientRect();
+    const x = event.clientX - parentRect.left - this.textDragOffset.x;
+    const y = event.clientY - parentRect.top - this.textDragOffset.y;
+    this.shape.textPosition = { x, y };
+    this.changeDetectorRef.detectChanges();
+  };
+
+  onTextContainerMouseUp = (event: MouseEvent) => {
+    if (!this.isTextDragging) return;
+    this.isTextDragging = false;
+    this.setShapeDraggingClass(false);
+    document.removeEventListener('mousemove', this.onTextContainerMouseMove);
+    document.removeEventListener('mouseup', this.onTextContainerMouseUp);
+    // Save position to shape JSON/service
+    this.canvasService.updateShape(this.shape.id, { textPosition: this.shape.textPosition });
+  };
+
 }
