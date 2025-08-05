@@ -1,5 +1,6 @@
 import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { CanvasService } from '../services/canvas.service';
 import { Shape, CanvasState } from '../models/shape.model';
 import { SHAPE_PALETTE, ShapePaletteItem } from '../models/shape-palette';
@@ -12,7 +13,7 @@ type ShapeType = 'circle' | 'square';
 @Component({
   selector: 'app-canvas',
   standalone: true,
-  imports: [CommonModule, ShapeComponent, ConfirmClearModalComponent],
+  imports: [CommonModule, RouterLink, ShapeComponent, ConfirmClearModalComponent],
   templateUrl: './canvas.component.html',
   styleUrls: ['./canvas.component.scss']
 })

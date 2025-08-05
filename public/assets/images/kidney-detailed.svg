@@ -1,0 +1,135 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f8f9fa"/>
+  
+  <!-- Grid lines for reference (light) -->
+  <defs>
+    <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#e9ecef" stroke-width="1" opacity="0.3"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#grid)" />
+  
+  <!-- Main kidney shape -->
+  <path d="M300 150 
+           C 250 150, 200 180, 180 230
+           C 160 280, 170 330, 190 380
+           C 210 430, 250 470, 300 490
+           C 350 510, 400 500, 450 480
+           C 500 460, 540 430, 560 390
+           C 580 350, 580 310, 570 270
+           C 560 230, 540 200, 510 180
+           C 480 160, 450 150, 420 155
+           C 400 158, 385 165, 375 175
+           C 365 185, 360 195, 355 205
+           C 350 195, 345 185, 335 175
+           C 325 165, 310 158, 295 155
+           C 285 152, 275 150, 265 152
+           L 300 150 Z" 
+        fill="#d4a574" 
+        stroke="#8b4513" 
+        stroke-width="4"/>
+  
+  <!-- Kidney cortex (outer layer) -->
+  <path d="M310 180
+           C 270 180, 230 200, 215 240
+           C 200 280, 210 320, 225 360
+           C 240 400, 270 430, 310 445
+           C 350 460, 390 455, 425 440
+           C 460 425, 485 400, 500 370
+           C 515 340, 515 310, 508 280
+           C 501 250, 485 225, 465 210
+           C 445 195, 420 185, 395 188
+           C 380 190, 368 195, 360 202
+           C 352 195, 340 190, 325 188
+           C 315 186, 305 180, 295 182
+           L 310 180 Z"
+        fill="#c4956a" 
+        opacity="0.8"/>
+  
+  <!-- Kidney medulla (inner layer) -->
+  <ellipse cx="365" cy="315" rx="90" ry="120" fill="#b8885e" opacity="0.7"/>
+  
+  <!-- Renal pelvis -->
+  <path d="M340 290 
+           C 330 300, 325 315, 325 330
+           C 325 345, 330 360, 340 370
+           C 350 380, 365 385, 380 385
+           C 395 385, 410 380, 420 370
+           C 430 360, 435 345, 435 330
+           C 435 315, 430 300, 420 290
+           C 410 280, 395 275, 380 275
+           C 365 275, 350 280, 340 290 Z" 
+        fill="#a67c52" 
+        stroke="#8b4513" 
+        stroke-width="2"/>
+  
+  <!-- Calyces (small collecting areas) -->
+  <ellipse cx="350" cy="300" rx="8" ry="12" fill="#956b47"/>
+  <ellipse cx="370" cy="295" rx="6" ry="10" fill="#956b47"/>
+  <ellipse cx="390" cy="305" rx="7" ry="11" fill="#956b47"/>
+  <ellipse cx="360" cy="340" rx="9" ry="13" fill="#956b47"/>
+  <ellipse cx="385" cy="350" rx="8" ry="12" fill="#956b47"/>
+  
+  <!-- Ureter (tube leading out) -->
+  <path d="M380 385 Q 390 420, 400 450 Q 405 480, 410 510" 
+        stroke="#8b4513" 
+        stroke-width="6" 
+        fill="none"/>
+  
+  <!-- Renal artery -->
+  <path d="M180 280 Q 220 285, 260 290 Q 300 295, 340 300" 
+        stroke="#dc3545" 
+        stroke-width="5" 
+        fill="none"/>
+  
+  <!-- Renal vein -->
+  <path d="M180 320 Q 220 315, 260 310 Q 300 305, 340 310" 
+        stroke="#007bff" 
+        stroke-width="5" 
+        fill="none"/>
+  
+  <!-- Texture and detail lines -->
+  <path d="M250 200 Q 320 210, 390 200" stroke="#8b4513" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M260 230 Q 330 240, 400 230" stroke="#8b4513" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M270 260 Q 340 270, 410 260" stroke="#8b4513" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M280 290 Q 350 300, 420 290" stroke="#8b4513" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M270 320 Q 340 330, 410 320" stroke="#8b4513" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M260 350 Q 330 360, 400 350" stroke="#8b4513" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M250 380 Q 320 390, 390 380" stroke="#8b4513" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M240 410 Q 310 420, 380 410" stroke="#8b4513" stroke-width="1" fill="none" opacity="0.4"/>
+  
+  <!-- Labels -->
+  <text x="400" y="80" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#2c3e50" text-anchor="middle">
+    Human Kidney - Stone Marker
+  </text>
+  
+  <text x="150" y="280" font-family="Arial, sans-serif" font-size="14" fill="#dc3545" font-weight="bold">
+    Renal Artery
+  </text>
+  
+  <text x="150" y="320" font-family="Arial, sans-serif" font-size="14" fill="#007bff" font-weight="bold">
+    Renal Vein
+  </text>
+  
+  <text x="420" y="530" font-family="Arial, sans-serif" font-size="14" fill="#8b4513" font-weight="bold">
+    Ureter
+  </text>
+  
+  <text x="480" y="315" font-family="Arial, sans-serif" font-size="12" fill="#666">
+    Medulla
+  </text>
+  
+  <text x="380" y="250" font-family="Arial, sans-serif" font-size="12" fill="#666">
+    Cortex
+  </text>
+  
+  <text x="380" y="395" font-family="Arial, sans-serif" font-size="12" fill="#666">
+    Pelvis
+  </text>
+  
+  <!-- Instructions -->
+  <text x="400" y="560" font-family="Arial, sans-serif" font-size="16" fill="#666" text-anchor="middle">
+    Click "Add Stone" to place markers on areas where kidney stones might form
+  </text>
+</svg>
