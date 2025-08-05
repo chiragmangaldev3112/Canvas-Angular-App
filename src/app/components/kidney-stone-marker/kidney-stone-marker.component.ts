@@ -176,14 +176,14 @@ interface DragState {
                     <button 
                       class="btn btn-sm btn-outline-success"
                       (click)="increaseStoneSize(stone.id); $event.stopPropagation()"
-                      [disabled]="stone.radius >= 0.15"
+                      [disabled]="isMaxSize(stone.radius)"
                       title="Increase size">
                       <i class="bi bi-arrow-up"></i>
                     </button>
                     <button 
                       class="btn btn-sm btn-outline-warning"
                       (click)="decreaseStoneSize(stone.id); $event.stopPropagation()"
-                      [disabled]="stone.radius <= 0.02"
+                      [disabled]="isMinSize(stone.radius)"
                       title="Decrease size">
                       <i class="bi bi-arrow-down"></i>
                     </button>
@@ -586,6 +586,12 @@ export class KidneyStoneMarkerComponent implements OnInit {
   @ViewChild('imageContainer', { static: false }) imageContainer!: ElementRef<HTMLDivElement>;
   @ViewChild('kidneyImage', { static: false }) kidneyImage!: ElementRef<HTMLImageElement>;
 
+  // Stone size constants (as percentage of container)
+  private readonly MIN_STONE_SIZE = 0.02; // 2% of container
+  private readonly MAX_STONE_SIZE = 0.15; // 15% of container
+  private readonly DEFAULT_STONE_SIZE = 0.05; // 5% of container
+  private readonly SIZE_INCREMENT = 0.01; // 1% increment for resize buttons
+
   stones: StoneMarker[] = [];
   containerWidth = 0;
   containerHeight = 0;
@@ -676,10 +682,10 @@ export class KidneyStoneMarkerComponent implements OnInit {
     this.stoneCounter++;
     const colorIndex = (this.stones.length) % this.colorPalette.length;
     const newStone: StoneMarker = {
-      id: `stone${this.stoneCounter}`,
+      id: `stone-${this.stoneCounter}`,
       x: 0.5, // Center horizontally
       y: 0.5, // Center vertically
-      radius: 0.05, // 5% of container size
+      radius: this.DEFAULT_STONE_SIZE, // 5% of container size
       color: this.colorPalette[colorIndex],
       colorIndex: colorIndex
     };
@@ -770,24 +776,32 @@ export class KidneyStoneMarkerComponent implements OnInit {
       typeof stone.radius === 'number' &&
       stone.x >= 0 && stone.x <= 1 &&
       stone.y >= 0 && stone.y <= 1 &&
-      stone.radius > 0 && stone.radius <= 1
+      stone.radius >= this.MIN_STONE_SIZE && stone.radius <= this.MAX_STONE_SIZE
     );
   }
 
   increaseStoneSize(stoneId: string) {
     const stone = this.stones.find(s => s.id === stoneId);
-    if (stone && stone.radius < 0.15) {
-      stone.radius = Math.min(0.15, stone.radius + 0.01);
+    if (stone && stone.radius < this.MAX_STONE_SIZE) {
+      stone.radius = Math.min(this.MAX_STONE_SIZE, stone.radius + this.SIZE_INCREMENT);
       this.saveToLocalStorage();
     }
   }
 
   decreaseStoneSize(stoneId: string) {
     const stone = this.stones.find(s => s.id === stoneId);
-    if (stone && stone.radius > 0.02) {
-      stone.radius = Math.max(0.02, stone.radius - 0.01);
+    if (stone && stone.radius > this.MIN_STONE_SIZE) {
+      stone.radius = Math.max(this.MIN_STONE_SIZE, stone.radius - this.SIZE_INCREMENT);
       this.saveToLocalStorage();
     }
+  }
+
+  isMaxSize(radius: number): boolean {
+    return radius >= this.MAX_STONE_SIZE;
+  }
+
+  isMinSize(radius: number): boolean {
+    return radius <= this.MIN_STONE_SIZE;
   }
 
   clearAll() {
@@ -892,7 +906,7 @@ export class KidneyStoneMarkerComponent implements OnInit {
       const newRadius = this.dragState.startRadius * distanceRatio;
 
       // Constrain radius
-      stone.radius = Math.max(0.02, Math.min(0.15, newRadius));
+      stone.radius = Math.max(this.MIN_STONE_SIZE, Math.min(this.MAX_STONE_SIZE, newRadius));
     }
   }
 
