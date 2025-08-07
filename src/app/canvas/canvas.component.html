@@ -7,6 +7,18 @@
           <a routerLink="/kidney-marker" class="btn btn-info btn-sm me-2">
             <i class="bi bi-heart-pulse me-1"></i> Kidney Marker
           </a>
+          
+          <!-- Media Capture Buttons -->
+          <button class="btn btn-success btn-sm me-2" (click)="openMediaCapture('image')">
+            <i class="bi bi-camera me-1"></i> Capture Image
+          </button>
+          <button class="btn btn-warning btn-sm me-2" (click)="openMediaCapture('video')">
+            <i class="bi bi-camera-video me-1"></i> Capture Video
+          </button>
+          <button class="btn btn-secondary btn-sm me-2" (click)="openMediaCapture('audio')">
+            <i class="bi bi-mic me-1"></i> Capture Audio
+          </button>
+          
           <button class="btn btn-primary btn-sm me-2" (click)="saveCanvas()">
             <i class="bi bi-save me-1"></i> Save
           </button>
@@ -98,3 +110,11 @@
     </div>
   </div>
 </div>
+
+<!-- Media Capture Modal -->
+<app-media-capture-modal
+  [visible]="showMediaCaptureModal"
+  [mode]="mediaCaptureMode"
+  (onCapture)="handleMediaCapture($event)"
+  (onCancel)="handleMediaCaptureCancel()">
+</app-media-capture-modal>

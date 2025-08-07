@@ -1,0 +1,234 @@
+<!-- Media Capture Modal -->
+<div class="modal-backdrop" *ngIf="visible" (click)="cancel()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h5 class="modal-title">
+        <i class="bi" [ngClass]="{
+          'bi-camera': mode === 'image',
+          'bi-camera-video': mode === 'video',
+          'bi-mic': mode === 'audio'
+        }"></i>
+        {{ modalTitle }}
+      </h5>
+      <button type="button" class="btn-close" (click)="cancel()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <div class="spinner"></div>
+        <p>Initializing {{ mode }} capture...</p>
+      </div>
+
+      <!-- Permission Denied -->
+      <div *ngIf="!hasPermission && !isLoading" class="permission-denied">
+        <i class="bi bi-exclamation-triangle text-warning"></i>
+        <h6>Permission Required</h6>
+        <p>{{ permissionMessage }}</p>
+        <button class="btn btn-primary" (click)="initializeCapture()">
+          <i class="bi bi-arrow-clockwise"></i>
+          Try Again
+        </button>
+      </div>
+
+      <!-- Camera Preview (Image/Video) -->
+      <div *ngIf="showCameraPreview" class="camera-preview">
+        <video #videoElement 
+               autoplay 
+               muted 
+               playsinline
+               class="preview-video">
+        </video>
+        
+        <!-- Image Capture Controls -->
+        <div *ngIf="mode === 'image'" class="capture-controls">
+          <button class="btn btn-capture" (click)="captureImage()" [disabled]="isLoading">
+            <i class="bi bi-camera"></i>
+            <span>Capture</span>
+          </button>
+        </div>
+
+        <!-- Video Recording Controls -->
+        <div *ngIf="mode === 'video'" class="recording-controls">
+          <div class="recording-info" *ngIf="isRecording || isPaused">
+            <span class="recording-indicator" [class.paused]="isPaused">
+              <i class="bi" [ngClass]="isPaused ? 'bi-pause-fill' : 'bi-record-circle-fill'"></i>
+            </span>
+            <span class="recording-time">{{ formatTime(recordingTime) }}</span>
+          </div>
+          
+          <div class="control-buttons">
+            <button *ngIf="!isRecording" 
+                    class="btn btn-record" 
+                    (click)="startRecording()" 
+                    [disabled]="isLoading">
+              <i class="bi bi-record-circle"></i>
+              <span>Record</span>
+            </button>
+            
+            <button *ngIf="isRecording && !isPaused" 
+                    class="btn btn-pause" 
+                    (click)="pauseRecording()">
+              <i class="bi bi-pause-fill"></i>
+              <span>Pause</span>
+            </button>
+            
+            <button *ngIf="isRecording && isPaused" 
+                    class="btn btn-resume" 
+                    (click)="resumeRecording()">
+              <i class="bi bi-play-fill"></i>
+              <span>Resume</span>
+            </button>
+            
+            <button *ngIf="isRecording" 
+                    class="btn btn-stop" 
+                    (click)="stopRecording()" 
+                    [disabled]="isLoading">
+              <i class="bi bi-stop-fill"></i>
+              <span>Stop</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio Recording Interface -->
+      <div *ngIf="showAudioInterface" class="audio-interface">
+        <div class="audio-visualizer">
+          <div class="audio-icon">
+            <i class="bi bi-mic-fill" [class.recording]="isRecording && !isPaused"></i>
+          </div>
+          
+          <div class="recording-info" *ngIf="isRecording || isPaused">
+            <span class="recording-indicator" [class.paused]="isPaused">
+              <i class="bi" [ngClass]="isPaused ? 'bi-pause-fill' : 'bi-record-circle-fill'"></i>
+            </span>
+            <span class="recording-time">{{ formatTime(recordingTime) }}</span>
+          </div>
+        </div>
+        
+        <div class="control-buttons">
+          <button *ngIf="!isRecording" 
+                  class="btn btn-record" 
+                  (click)="startRecording()" 
+                  [disabled]="isLoading">
+            <i class="bi bi-record-circle"></i>
+            <span>Record</span>
+          </button>
+          
+          <button *ngIf="isRecording && !isPaused" 
+                  class="btn btn-pause" 
+                  (click)="pauseRecording()">
+            <i class="bi bi-pause-fill"></i>
+            <span>Pause</span>
+          </button>
+          
+          <button *ngIf="isRecording && isPaused" 
+                  class="btn btn-resume" 
+                  (click)="resumeRecording()">
+            <i class="bi bi-play-fill"></i>
+            <span>Resume</span>
+          </button>
+          
+          <button *ngIf="isRecording" 
+                  class="btn btn-stop" 
+                  (click)="stopRecording()" 
+                  [disabled]="isLoading">
+            <i class="bi bi-stop-fill"></i>
+            <span>Stop</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview Section -->
+      <div *ngIf="showPreview && capturedResult" class="preview-section">
+        
+        <!-- Image Preview -->
+        <div *ngIf="mode === 'image'" class="image-preview">
+          <img [src]="capturedResult.url" alt="Captured image" class="preview-image">
+        </div>
+
+        <!-- Video Preview -->
+        <div *ngIf="mode === 'video'" class="video-preview">
+          <video #previewVideo 
+                 controls 
+                 class="preview-video"
+                 [src]="capturedResult.url">
+          </video>
+        </div>
+
+        <!-- Audio Preview -->
+        <div *ngIf="mode === 'audio'" class="audio-preview">
+          <div class="audio-player">
+            <i class="bi bi-music-note-beamed"></i>
+            <audio #previewAudio 
+                   controls 
+                   class="audio-controls"
+                   [src]="capturedResult.url">
+            </audio>
+          </div>
+        </div>
+
+        <!-- Preview Controls -->
+        <div class="preview-controls">
+          <button class="btn btn-secondary" (click)="retake()">
+            <i class="bi bi-arrow-counterclockwise"></i>
+            Retake
+          </button>
+          <button class="btn btn-success" (click)="save()">
+            <i class="bi bi-check-lg"></i>
+            Save
+          </button>
+        </div>
+      </div>
+
+      <!-- Hidden file input for native fallback (image/video/audio) -->
+      <input #fileInput
+        type="file"
+        [accept]="mode === 'image' ? 'image/*' : mode === 'video' ? 'video/*' : 'audio/*'"
+        [attr.capture]="mode === 'image' ? 'environment' : (mode === 'video' ? 'user' : null)"
+        style="display: none"
+        (change)="handleFileInput($event)"
+      />
+      <!-- Fallback button if browser APIs are not supported -->
+      <div *ngIf="permissionMessage && !hasPermission" class="fallback-panel mt-4 p-3">
+        <div class="d-flex align-items-center mb-2">
+          <i [ngClass]="{
+            'bi-camera': mode === 'image',
+            'bi-film': mode === 'video',
+            'bi-mic': mode === 'audio'
+          }" class="fs-3 text-primary me-2"></i>
+          <span class="fw-semibold fs-5">Device {{ mode | titlecase }} Recorder</span>
+        </div>
+        <button class="btn btn-outline-primary w-100 mb-2" (click)="triggerNativeCapture()">
+          <i class="bi-upload me-1"></i>
+          Use Device {{ mode | titlecase }} Recorder
+        </button>
+        <div *ngIf="mode === 'audio' && isIOS && !supportsMediaRecorder" class="alert alert-danger py-2 px-3 mt-2 mb-0">
+          <i class="bi-exclamation-triangle-fill me-2"></i>
+          Audio recording is not supported on this version of iOS/Safari.<br>
+          <span class="small">Please update your device or use a different browser/device.</span>
+        </div>
+        <div *ngIf="permissionMessage && !(mode === 'audio' && isIOS && !supportsMediaRecorder)" class="alert alert-warning py-2 px-3 mt-2 mb-0">
+          <i class="bi-info-circle me-2"></i>
+          {{ permissionMessage }}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer" *ngIf="!showPreview">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">
+        <i class="bi bi-x-circle"></i>
+        Cancel
+      </button>
+    </div>
+
+  </div>
+</div>

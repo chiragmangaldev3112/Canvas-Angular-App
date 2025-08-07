@@ -6,6 +6,8 @@ import { Shape, CanvasState } from '../models/shape.model';
 import { SHAPE_PALETTE, ShapePaletteItem } from '../models/shape-palette';
 import { ShapeComponent } from '../components/shape/shape.component';
 import { ConfirmClearModalComponent } from './confirm-clear-modal.component';
+import { MediaCaptureModalComponent, CaptureMode } from '../components/media-capture-modal/media-capture-modal.component';
+import { MediaCaptureResult } from '../services/media-capture.service';
 
 type ShapeType = 'circle' | 'square';
 
@@ -13,7 +15,7 @@ type ShapeType = 'circle' | 'square';
 @Component({
   selector: 'app-canvas',
   standalone: true,
-  imports: [CommonModule, RouterLink, ShapeComponent, ConfirmClearModalComponent],
+  imports: [CommonModule, RouterLink, ShapeComponent, ConfirmClearModalComponent, MediaCaptureModalComponent],
   templateUrl: './canvas.component.html',
   styleUrls: ['./canvas.component.scss']
 })
@@ -24,6 +26,10 @@ export class CanvasComponent implements OnInit {
   shapes: Shape[] = [];
   selectedShapeId: string | null = null;
   showClearModal = false;
+  
+  // Media capture properties
+  showMediaCaptureModal = false;
+  mediaCaptureMode: CaptureMode = 'image';
   
   constructor(private canvasService: CanvasService) {}
   
@@ -185,5 +191,27 @@ export class CanvasComponent implements OnInit {
 
   handleClearCancel() {
     this.showClearModal = false;
+  }
+
+  // Media capture methods
+  openMediaCapture(mode: CaptureMode) {
+    this.mediaCaptureMode = mode;
+    this.showMediaCaptureModal = true;
+  }
+
+  handleMediaCapture(result: MediaCaptureResult) {
+    console.log(`${result.type} captured:`, result.path);
+    console.log('Media file URL:', result.url);
+    console.log('Media file size:', result.blob.size, 'bytes');
+    
+    // Here you can save the media file or send it to your backend
+    // For now, we'll just log the information
+    alert(`${result.type} captured successfully! Check console for details.`);
+    
+    this.showMediaCaptureModal = false;
+  }
+
+  handleMediaCaptureCancel() {
+    this.showMediaCaptureModal = false;
   }
 }
